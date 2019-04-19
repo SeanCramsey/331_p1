@@ -52,7 +52,7 @@ state_t state_i, state_g;
 void Expand(state_t *);
 bool IsIn(std::deque<state_t*>, state_t*);
 void PrintSolution(state_t *);
-//void GraphSearch(std::deque<state_t>);
+void GraphSearch();
 bool IsValidState(state_t *);
 void ReadFileIntoStruct(char *,state_t *);
 void PrintState(state_t *);
@@ -402,4 +402,26 @@ void PrintSolution(state_t *s){
   of << "Total number of nodes expanded: " << counter << "\n";
 
   return;
+}
+
+void GraphSearch(){
+   std::deque<state_t>* fringe;
+   std::deque<state_t>* closed;
+   state_t* node;
+
+   node = state_i;
+   fringe.push_back(node);
+   while(true){
+      if(fringe.empty()){printf("Could not find solution!\n");return;}
+      node = fringe.front(); fringe.pop_front();
+      if(node == &state_g){PrintSolution(node); return;}
+      if(!IsIn(closed, node)){
+	 closed.push_back(node);
+	 for(int i=0;node.children.size();i++){
+	    fringe.push_back(node.children[i]);
+	 }
+      }
+   }
+
+
 }
