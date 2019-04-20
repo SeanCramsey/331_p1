@@ -8,7 +8,7 @@
 #include <deque>
 
 #define IDDFS_MAXDEPTH 2147483647
-#define usageErr "./prog1 <initial state file> <goal state file> <mode> <output file>"
+#define usageErr "./prog1 <initial state file> <goal state file> <mode> <output file>\n"
 int counter = 0;
 //allowed modes
 char * modes[] = {"bfs",
@@ -31,6 +31,7 @@ struct state_{
   bank_t rightBank;
   struct state_ *parent;
   std::deque<struct state_ *> children;
+  int depth;
   int priority;
 
   inline bool operator==(struct state_ a) {
@@ -57,6 +58,20 @@ struct node_ {
 //initial and goal states gotten from files
 state_t state_i, state_g;
 
+struct action_{
+  int c;
+  int w;
+} typedef action_t;
+
+action_t actions[] = {
+  {1, 0},
+  {2, 0},
+  {0, 1},
+  {1, 1},
+  {0, 2}
+};
+
+//std::deque<state_t*> Expand(state_t*);
 void Expand(state_t *);
 bool IsIn(std::deque<state_t*>, state_t*);
 void PrintSolution(state_t *);
@@ -123,7 +138,6 @@ void BFS(){
    std::deque<state_t*> fringe;
    std::deque<state_t*> closed;
    state_t* node;
-
    node = &state_i;
    fringe.push_back(node);
    while(true){
@@ -134,6 +148,7 @@ void BFS(){
         closed.push_back(node);
         Expand(node);
         counter++;
+        //printf("%d\n", counter);
 	for(int i=0;i<node->children.size();i++){
           fringe.push_back(node->children[i]);
         }
@@ -240,6 +255,29 @@ int heuristic(state_t *s){
   return state_g.leftBank.value() - s->leftBank.value();
 }
 
+//
+void Expand(state_t* s){
+  //std::deque<state_t*> successors;
+  for (int i = 0; i < 5; i++) {
+    state_t * st = new state_t;
+    *st = *s;
+    st->parent = s;
+    bank_t *curBank = st->leftBank.boat ? &st->leftBank : &st->rightBank;
+    bank_t *otherBank = st->leftBank.boat ? &st->rightBank : &st->leftBank;
+    curBank->chickens -= actions[i].c;
+    otherBank->chickens += actions[i].c;
+    curBank->wolves -= actions[i].w;
+    otherBank->wolves += actions[i].w;
+    curBank->boat = 0;
+    otherBank->boat = 1;
+    if(IsValidState(st)){
+      s->children.push_back(st);
+    } else {
+      delete st;
+    }
+  }
+}/**/
+/*/
 void Expand(state_t *s){
   state_t *arr[5];
   //copy the current state, to preserve the original
@@ -247,7 +285,7 @@ void Expand(state_t *s){
   //get the bank the boat is on
   bank_t *curBank = s->leftBank.boat ? &s->leftBank : &s->rightBank;
   bank_t *otherBank = s->leftBank.boat ? &s->rightBank : &s->leftBank;
-  /*Put one chicken in the boat*/
+  //Put one chicken in the boat/
   curBank->chickens -= 1;
   otherBank->chickens += 1;
   curBank->boat = 0;
@@ -257,7 +295,7 @@ void Expand(state_t *s){
   a->parent = s;
   arr[0] = a;
   *s = st;
-  /*Put two chickens in the boat*/
+  //Put two chickens in the boat/
   curBank->chickens -= 2;
   otherBank->chickens += 2;
   curBank->boat = 0;
@@ -267,7 +305,7 @@ void Expand(state_t *s){
   b->parent = s;
   arr[1] = b;
   *s = st;
-  /*Put one wolf in the boat*/
+  //Put one wolf in the boat/
   curBank->wolves -= 1;
   otherBank->wolves += 1;
   curBank->boat = 0;
@@ -277,7 +315,7 @@ void Expand(state_t *s){
   c->parent = s;
   arr[2] = c;
   *s = st;
-  /*Put one wolf and one chicken in the boat*/
+  //Put one wolf and one chicken in the boat/
   curBank->wolves -= 1;
   otherBank->wolves += 1;
   curBank->chickens -= 1;
@@ -289,7 +327,7 @@ void Expand(state_t *s){
   d->parent = s;
   arr[3] = d;
   *s = st;
-  /*Put two wolves in the boat*/
+  //Put two wolves in the boat/
   curBank->wolves -= 2;
   otherBank->wolves += 2;
   curBank->boat = 0;
@@ -306,7 +344,7 @@ void Expand(state_t *s){
       delete arr[i];
     }
   }
-}
+}/**/
 
 bool IsValidState(state_t *state){
   //if any bank has negative animals it is invalid
@@ -357,10 +395,10 @@ void ReadFileIntoStruct(char *fpath, state_t *s){
 }
 void PrintState(state_t *s){
   printf("%d,%d,%d\n%d,%d,%d\n\n",
-        s->leftBank.wolves,s->leftBank.chickens,s->leftBank.boat,
-        s->rightBank.wolves,s->rightBank.chickens,s->rightBank.boat);
+        s->leftBank.chickens,s->leftBank.wolves,s->leftBank.boat,
+        s->rightBank.chickens,s->rightBank.wolves,s->rightBank.boat);
 
-    of << s->leftBank.wolves << "," << s->leftBank.chickens << "," << s->leftBank.boat << "\n" << s->rightBank.wolves << "," << s->rightBank.chickens << "," << s->rightBank.boat << "\n\n";
+    of << s->leftBank.chickens << "," << s->leftBank.wolves << "," << s->leftBank.boat << "\n" << s->rightBank.chickens << "," << s->rightBank.wolves << "," << s->rightBank.boat << "\n\n";
 }
 
 //check if a node is in the closed list
