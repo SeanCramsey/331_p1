@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
   of.open(argv[4], std::fstream::out);
   if(!strcmp(mode, modes[0])){
     //run bfs
-    GraphSearch();
+    //GraphSearch();
     BFS();
     of.close();
     return 0;
@@ -120,93 +120,66 @@ int main(int argc, char *argv[]) {
   return 1;
 }
 void BFS(){
-  if(state_i == state_g){
-    PrintSolution(&state_i);
-    return;//solution
-  }
-  std::deque<state_t*> frontier;
-  frontier.push_front(&state_i);
-  std::deque<state_t*> explored;
-  while(true){
-    if(frontier.empty()){
-      printf("Could not find solution\n");
-      return; //failure
-    }
-    state_t *node = frontier.back();
-    frontier.pop_back();
-		explored.push_back(node);
-    //Expand child nodes
-    Expand(node);
-    counter++;
-   	for(auto &child : node->children){
-      if(std::find(frontier.begin(), frontier.end(), child) != frontier.end()) {
-        continue;
-			} else {
-    		/* v does not contain x */
-        if(std::find(explored.begin(), explored.end(), child) != explored.end()) {
-    			continue;
-				} else {
-          if(*child == state_g){
-            PrintSolution(child);
-            return;
-          }
-          frontier.push_front(child);
-				}
-			}
-    }
-  }
+   std::deque<state_t*> fringe;
+   std::deque<state_t*> closed;
+   state_t* node;
+
+   node = &state_i;
+   fringe.push_back(node);
+   while(true){
+      if(fringe.empty()){printf("Could not find solution!\n");return;}
+      node = fringe.front(); fringe.pop_front();
+      if(*node == state_g){PrintSolution(node); return;}
+        if(!IsIn(closed, node)){
+        closed.push_back(node);
+        Expand(node);
+        counter++;
+	for(int i=0;i<node->children.size();i++){
+          fringe.push_back(node->children[i]);
+        }
+      }
+   }
 }
 void DFS(){//
-  state_t *node = &state_i;
-  state_t *child;
-  std::deque<state_t*> frontier;
-  std::deque<state_t*> explored;
-  if(*node == state_g){PrintSolution(node);}
-  frontier.push_front(node);
-  while(true){
-    if(frontier.empty()){printf("Could not find solution!\n"); return;}
-    node = frontier.front();
-    frontier.pop_front();
-    explored.push_back(node);
-    Expand(node);
-    counter++;
-    for(int i=0;i<node->children.size();i++){
-      child = node->children[i];
-      if(!IsIn(explored, child) && !IsIn(frontier, child)){
-        if(*child == state_g){
-          PrintSolution(child);
-          return;
+   std::deque<state_t*> fringe;
+   std::deque<state_t*> closed;
+   state_t* node;
+
+   node = &state_i;
+   fringe.push_back(node);
+   while(true){
+      if(fringe.empty()){printf("Could not find solution!\n");return;}
+      node = fringe.front(); fringe.pop_front();
+      if(*node == state_g){PrintSolution(node); return;}
+        if(!IsIn(closed, node)){
+        closed.push_back(node);
+        Expand(node);
+        counter++;
+	for(int i=0;i<node->children.size();i++){
+          fringe.push_front(node->children[i]);
         }
-        frontier.push_front(child);
       }
-    }
-  }/**/
+   }
 }
 int DLS(int lim){
-  state_t *node = &state_i;
-  state_t *child;
-  std::deque<state_t*> frontier;
-  std::deque<state_t*> explored;
-  if(*node == state_g){PrintSolution(node);}
-  frontier.push_front(node);
-  while(lim--){
-    //if(frontier.empty()){printf("Could not find solution!\n"); return;}
-    node = frontier.front();
-    frontier.pop_front();
-    explored.push_back(node);
-    Expand(node);
-    counter++;
-    for(int i=0;i<node->children.size();i++){
-      child = node->children[i];
-      if(!IsIn(explored, child) && !IsIn(frontier, child)){
-        if(*child == state_g){
-          PrintSolution(child);
-          return 0;
+   std::deque<state_t*> fringe;
+   std::deque<state_t*> closed;
+   state_t* node;
+
+   node = &state_i;
+   fringe.push_back(node);
+   while(lim--){
+      node = fringe.front(); fringe.pop_front();
+      if(*node == state_g){PrintSolution(node); return 0;}
+        if(!IsIn(closed, node)){
+        closed.push_back(node);
+        Expand(node);
+        counter++;
+	for(int i=0;i<node->children.size();i++){
+          fringe.push_front(node->children[i]);
         }
-        frontier.push_front(child);
       }
-    }
-  }/**/
+   }
 }
 
 void IDDFS(){
