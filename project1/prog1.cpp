@@ -264,7 +264,7 @@ void Expand(state_t* s){
     *st = *s;
     st->parent = s;
     st->depth += 1;
-    st->priority = heuristic(st);
+
     bank_t *curBank = st->leftBank.boat ? &st->leftBank : &st->rightBank;
     bank_t *otherBank = st->leftBank.boat ? &st->rightBank : &st->leftBank;
     curBank->chickens -= actions[i].c;
@@ -273,6 +273,9 @@ void Expand(state_t* s){
     otherBank->wolves += actions[i].w;
     curBank->boat = 0;
     otherBank->boat = 1;
+
+    st->priority = heuristic(st);
+
     if(IsValidState(st)){
       s->children.push_back(st);
     } else {
