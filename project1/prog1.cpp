@@ -223,7 +223,7 @@ void IDDFS(){
 }
 void ASTAR(){
   std::priority_queue<state_t*> queue;
-  std::vector<state_t*> closed;
+  std::deque<state_t*> closed;
 
   state_t * node = &state_i;
   node->priority = heuristic(node);
@@ -241,8 +241,10 @@ void ASTAR(){
     Expand(node);
     counter++;
     for(int i = 0; i < node->children.size(); i++){
-      queue.push(node->children[i]);
-      closed.push_back(node->children[i]);
+      if(!IsIn(closed, node->children[i])){
+        queue.push(node->children[i]);
+        closed.push_back(node->children[i]);
+      }
     }
   }
 }
