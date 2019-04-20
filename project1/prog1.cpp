@@ -44,11 +44,19 @@ struct state_{
 struct node_ {
 	state_t state;
 	state_t * parent;
-}
+  std::deque<struct node_ *> children;
+  int priority;
+  inline bool operator==(struct node_ a){
+    if(a.state == state){
+      return true;
+    } else {
+      return false;
+    }
+  }
+} typedef node_t;
 //initial and goal states gotten from files
 state_t state_i, state_g;
 
-//void GenChildStates(state_t *);
 void Expand(state_t *);
 bool IsIn(std::deque<state_t*>, state_t*);
 void PrintSolution(state_t *);
@@ -81,7 +89,7 @@ int main(int argc, char *argv[]) {
   of.open(argv[4], std::fstream::out);
   if(!strcmp(mode, modes[0])){
     //run bfs
-
+    GraphSearch();
     BFS();
     of.close();
     return 0;
@@ -405,24 +413,22 @@ void PrintSolution(state_t *s){
 }
 
 void GraphSearch(){
-   std::deque<state_t>* fringe;
-   std::deque<state_t>* closed;
+   std::deque<state_t*> fringe;
+   std::deque<state_t*> closed;
    state_t* node;
 
-   node = state_i;
+   node = &state_i;
    fringe.push_back(node);
    while(true){
       if(fringe.empty()){printf("Could not find solution!\n");return;}
       node = fringe.front(); fringe.pop_front();
-      if(node == &state_g){PrintSolution(node); return;}
-      if(!IsIn(closed, node)){
-	 closed.push_back(node);
-	 Expand(node);
-	 for(int i=0;node.children.size();i++){
-	    fringe.push_back(node.children[i]);
-	 }
+      if(*node == state_g){PrintSolution(node); return;}
+        if(!IsIn(closed, node)){
+        closed.push_back(node);
+        Expand(node);
+        for(int i=0;node->children.size();i++){
+          fringe.push_back(node->children[i]);
+        }
       }
    }
-
-
 }
