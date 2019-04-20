@@ -100,6 +100,7 @@ int main(int argc, char *argv[]) {
   }
   ReadFileIntoStruct(argv[1], &state_i);
   ReadFileIntoStruct(argv[2], &state_g);
+  state_i.depth = 0;
   mode = argv[3];
   of.open(argv[4], std::fstream::out);
   if(!strcmp(mode, modes[0])){
@@ -262,6 +263,8 @@ void Expand(state_t* s){
     state_t * st = new state_t;
     *st = *s;
     st->parent = s;
+    st->depth += 1;
+    st->priority = heuristic(st);
     bank_t *curBank = st->leftBank.boat ? &st->leftBank : &st->rightBank;
     bank_t *otherBank = st->leftBank.boat ? &st->rightBank : &st->leftBank;
     curBank->chickens -= actions[i].c;
