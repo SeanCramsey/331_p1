@@ -274,6 +274,13 @@ void Expand(state_t* s){
     curBank->boat = 0;
     otherBank->boat = 1;
 
+    //do not include parent state
+    if(s->parent != NULL){
+      if(*s->parent == *st){
+        delete st;
+        continue;
+      }
+    }
     st->priority = heuristic(st);
 
     if(IsValidState(st)){
