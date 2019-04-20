@@ -426,7 +426,8 @@ void GraphSearch(){
         if(!IsIn(closed, node)){
         closed.push_back(node);
         Expand(node);
-        for(int i=0;node->children.size();i++){
+        counter++;
+	for(int i=0;i<node->children.size();i++){
           fringe.push_back(node->children[i]);
         }
       }
