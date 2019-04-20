@@ -155,7 +155,7 @@ void DFS(){//
         closed.push_back(node);
         Expand(node);
         counter++;
-	for(int i=0;i<node->children.size();i++){
+	for(int i=node->children.size();i>0;i--){
           fringe.push_front(node->children[i]);
         }
       }
@@ -175,7 +175,7 @@ int DLS(int lim){
         closed.push_back(node);
         Expand(node);
         counter++;
-	for(int i=0;i<node->children.size();i++){
+	for(int i=node->children.size();i>0;i--){
           fringe.push_front(node->children[i]);
         }
       }
