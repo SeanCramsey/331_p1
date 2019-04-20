@@ -6,6 +6,8 @@
 #include <deque>
 #include <algorithm>
 #include <deque>
+#include <queue>
+#include <vector>
 
 #define IDDFS_MAXDEPTH 2147483647
 #define usageErr "./prog1 <initial state file> <goal state file> <mode> <output file>\n"
@@ -39,6 +41,9 @@ struct state_{
     	return true;
     else
     	return false;
+  }
+  inline bool operator>(struct state_ a) {
+    return priority >= a.priority;
   }
 } typedef state_t;
 
@@ -217,30 +222,31 @@ void IDDFS(){
   return;
 }
 void ASTAR(){
-	std::deque<state_t*> closed;
-  std::deque<state_t*> open;
+  std::priority_queue<state_t*> queue;
+  std::vector<state_t*> closed;
 
-  state_i.priority = heuristic(&state_i);
-  open.push_front(&state_i);
-  closed.push_front(&state_i);
+  state_t * node = &state_i;
+  node->priority = heuristic(node);
+  queue.push(node);
+  closed.push_back(node);
 
-	while(!open.empty()){
-		int pos = maxElem(&open);
-		state_t * current = open.at(pos);
-		open.erase(open.begin() + pos);
-		if (*current == state_g) {
-			PrintSolution(current);
-			return;
-		}
-		Expand(current);
-		counter++;
-		for (auto &child : current->children) {
-			child->priority = heuristic(child);
-			open.push_front(child);
-			closed.push_front(child);
-		}
+  while (!queue.empty()){
+    node = queue.top();
+    queue.pop();
+
+    if (*node == state_g){
+      PrintSolution(node);
+      return;
+    }
+    Expand(node);
+    counter++;
+    for(int i = 0; i < node->children.size(); i++){
+      queue.push(node->children[i]);
+      closed.push_back(node->children[i]);
+    }
   }
 }
+
 int maxElem(std::deque<state_t*> *d){
   int maxI = 0;
   int maxV = 0;
@@ -256,7 +262,7 @@ int maxElem(std::deque<state_t*> *d){
   return maxI;
 }
 int heuristic(state_t *s){
-  return state_g.leftBank.value() - s->leftBank.value();
+  return state_g.leftBank.value() - s->leftBank.value() + s->depth;
 }
 
 //
