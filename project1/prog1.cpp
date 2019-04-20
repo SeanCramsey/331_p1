@@ -18,8 +18,8 @@ char * modes[] = {"bfs",
 char * mode;
 //structs representing a riverbank
 struct bank_{
-  int wolves;
   int chickens;
+  int wolves;
   int boat;
   int value(){
     return wolves + chickens + boat;
@@ -155,8 +155,10 @@ void DFS(){//
         closed.push_back(node);
         Expand(node);
         counter++;
-	for(int i=node->children.size();i>0;i--){
-          fringe.push_front(node->children[i]);
+	if(!(node->children.empty())){
+	   for(int i=node->children.size();i>0;i--){
+	      fringe.push_front(node->children[i]);
+	   }
         }
       }
    }
@@ -175,8 +177,10 @@ int DLS(int lim){
         closed.push_back(node);
         Expand(node);
         counter++;
-	for(int i=node->children.size();i>0;i--){
-          fringe.push_front(node->children[i]);
+	if(!(node->children.empty())){
+	   for(int i=node->children.size();i>0;i--){
+	      fringe.push_front(node->children[i]);
+	   }
         }
       }
    }
