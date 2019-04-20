@@ -168,14 +168,14 @@ void DFS(){//
       node = fringe.front(); fringe.pop_front();
       if(*node == state_g){PrintSolution(node); return;}
         if(!IsIn(closed, node)){
-        closed.push_back(node);
-        Expand(node);
-        counter++;
-	if(!(node->children.empty())){
-	   for(int i=node->children.size();i>0;i--){
+	   closed.push_back(node);
+	   Expand(node);
+	   counter++;
+	   //if(!(node->children.empty())){
+	   for(int i=node->children.size()-1;i>0;i--){
 	      fringe.push_front(node->children[i]);
 	   }
-        }
+        //}
       }
    }
 }
@@ -193,18 +193,21 @@ int DLS(int lim){
         closed.push_back(node);
         Expand(node);
         counter++;
-	if(!(node->children.empty())){
-	   for(int i=node->children.size();i>0;i--){
+	//printf("%d\n",counter);
+//	if(!(node->children.empty())){
+	   for(int i=node->children.size()-1;i>0;i--){
 	      fringe.push_front(node->children[i]);
 	   }
-        }
+//       }
       }
    }
+   return 1;
 }
 
 void IDDFS(){
   int result;
-  for(int depth=0;depth<IDDFS_MAXDEPTH;depth++){
+  for(int depth=1;depth<IDDFS_MAXDEPTH;depth++){
+    //printf("Depth: %d\n\n", depth);
     result = DLS(depth);
     if(result == 0){
        return;
